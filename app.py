@@ -2,20 +2,24 @@ from flask import Flask, render_template, request
 from utils.general import Load_model,translate
 import torch
 import torchtext
+import pickle
+from pythainlp import word_tokenize
 
 
 
 
 app = Flask(__name__)
 
-model_path = "model/best-val-lstm_lm.pt"
-params_path = "model/params.pt"
-vocab_path ="model/vocab.pt"
-
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = Load_model(model_path,params_path).to(device)
+device = torch.device('cpu')
+tokenizer = word_tokenize
+model = Load_model(device)  
 model.eval()
-vocab = torch.load(vocab_path)
+
+with open("models/vocab_en.pkl",'rb') as f:
+    vocab_en = pickle.load(f)
+
+with open("models/vocab_th.pkl",'rb') as f:
+    vocab_th = pickle.load(f)
 
 
 @app.route('/')
@@ -28,7 +32,7 @@ def generate_suggestions():
     prompt = request.args.get('code', '')
     print(prompt)
 
-    suggestion = translate(prompt)
+    suggestion = translate(prompt,vocab_th,vocab_en, model,tokenizer)
     return {'suggestions': [f'<li class="list-group-item">{suggestion}</li>']}
 
 

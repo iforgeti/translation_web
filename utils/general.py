@@ -1,7 +1,7 @@
 from torch import nn
 import torch
 import torchtext
-from structure import  Encoder, Decoder,Seq2SeqPackedAttention,Attention
+from utils.structure import  Encoder, Decoder,Seq2SeqPackedAttention,Attention
 import pickle
 from pythainlp import word_tokenize
 # models architect
